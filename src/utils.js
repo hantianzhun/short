@@ -282,4 +282,3 @@ export const html = `
   </script>
 </body>
 </html>
-`
