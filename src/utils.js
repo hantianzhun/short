@@ -84,13 +84,14 @@ export const html = `<!DOCTYPE html>
     .entry {
       background-color: #ffffff;
       border-radius: 10px;
-      padding: 1.2rem;
       border: 1px solid #ddd;
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s;
       user-select: none;
+      /* 上下留白完全对称 */
+      padding: 1.5rem 1.2rem;
     }
 
     .entry:hover {
@@ -182,7 +183,7 @@ export const html = `<!DOCTYPE html>
       }
 
       .entry {
-        padding: 1rem;
+        padding: 1.5rem 1rem;
       }
     }
   </style>
