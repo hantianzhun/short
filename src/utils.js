@@ -1,71 +1,181 @@
 export const html = `
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>短链管理</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fa;
       padding: 2rem;
-      background: #f7f7f7;
+      margin: 0;
+      color: #333;
     }
+
     h1 {
-      margin-bottom: 1rem;
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
     }
+
+    h2 {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 1rem;
+      color: #7f8c8d;
+    }
+
     form {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
       margin-bottom: 2rem;
     }
-    input[type="text"], input[type="url"] {
-      padding: 0.5rem;
-      margin-right: 0.5rem;
+
+    input[type="text"],
+    input[type="url"] {
+      padding: 0.8rem;
       width: 250px;
-      max-width: 100%;
-      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
     }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus {
+      border-color: #3498db;
+    }
+
     button {
-      padding: 0.5rem 1rem;
-      margin-left: 0.5rem;
+      padding: 0.8rem 1.2rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
     }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #list {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
     .entry {
-      background: white;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 1.2rem;
+      border: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
       user-select: none;
     }
-    .details {
-      margin-top: 0.5rem;
-      display: none;
+
+    .entry:hover {
+      transform: translateY(-5px);
     }
-    .entry.open .details {
-      display: block;
-    }
-    .actions {
-      margin-top: 0.5rem;
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+
     .code-url {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
     }
-    .code-url span {
-      font-weight: bold;
+
+    .code-url a {
+      color: #3498db;
+      text-decoration: none;
     }
+
     .code-url button {
-      margin-left: 1rem;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
+
+    .code-url button:hover {
+      background-color: #c0392b;
+    }
+
+    .details {
+      display: none;
+      margin-top: 1rem;
+      background-color: #ecf0f1;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+
+    .entry.open .details {
+      display: block;
+    }
+
     .edit-url {
-      flex-grow: 1;
-      min-width: 200px;
-      padding: 0.5rem;
-      box-sizing: border-box;
+      width: 100%;
+      padding: 0.8rem;
+      margin-right: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actions button {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .actions button:hover {
+      background-color: #27ae60;
+    }
+
+    .actions .update-btn {
+      background-color: #f39c12;
+    }
+
+    .actions .update-btn:hover {
+      background-color: #e67e22;
+    }
+
+    @media (max-width: 600px) {
+      input[type="text"], input[type="url"] {
+        width: 200px;
+      }
+
+      button {
+        width: 120px;
+      }
+
+      .entry {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
@@ -92,25 +202,24 @@ export const html = `
       items.forEach(({ code, url }) => {
         const div = document.createElement('div')
         div.className = 'entry'
-        div.innerHTML = \`
+        div.innerHTML = `
           <div class="code-url">
-            <span>短码：<a href="/\${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/\${code}</a></span>
+            <span>短码：<a href="/${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/${code}</a></span>
             <div>
               <button class="delete-btn">删除</button>
             </div>
           </div>
           <div class="details">
             <div>
-              当前链接：<a href="\${url}" target="_blank" rel="noopener noreferrer">\${url}</a>
+              当前链接：<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
             </div>
             <div class="actions">
-              <input type="url" placeholder="修改后的链接" class="edit-url" value="\${url}" />
+              <input type="url" placeholder="修改后的链接" class="edit-url" value="${url}" />
               <button class="update-btn">保存修改</button>
             </div>
           </div>
-        \`
+        `
 
-        // 点击整个条目展开/收起，输入框和按钮点击阻止展开
         div.addEventListener('click', (e) => {
           if (
             e.target.classList.contains('delete-btn') ||
