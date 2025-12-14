@@ -5,47 +5,57 @@ export const html = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>短链管理</title>
   <style>
-    /* 关键：整页垂直居中 */
+    /* 全局样式 */
     html, body {
       height: 100%;
-    }
-    body {
+      margin: 0;
       font-family: 'Arial', sans-serif;
       background-color: #f4f7fa;
-      margin: 0;
       color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-      display: flex;              /* 开启 flex */
-      flex-direction: column;     /* 纵向排列 */
-      justify-content: center;    /* 垂直居中 */
-      align-items: center;        /* 水平也居中（可选） */
-      gap: 2rem;                  /* 代替原来的 padding-top/bottom */
+    body {
+      flex-direction: column;
+      gap: 2rem;
+      width: 100%;
     }
 
     h1 {
-      text-align: center;
+      font-size: 2.5rem;
       color: #2c3e50;
+      text-align: center;
       margin: 0;
-      font-size: 2rem;
     }
 
     h2 {
-      font-size: 1rem;
+      font-size: 1.2rem;
+      color: #7f8c8d;
       text-align: center;
       margin: 0;
-      color: #7f8c8d;
     }
 
+    /* 表单样式 */
     form {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       gap: 1rem;
+      width: 100%;
+      max-width: 600px;
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     input[type="text"],
     input[type="url"] {
       padding: 0.8rem;
-      width: 250px;
+      width: 100%;
+      max-width: 100%;
       border-radius: 10px;
       border: 1px solid #ddd;
       font-size: 1rem;
@@ -73,12 +83,13 @@ export const html = `<!DOCTYPE html>
       background-color: #2980b9;
     }
 
+    /* 列表样式 */
     #list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
       width: 100%;
-      max-width: 600px;   /* 限制最大宽度，避免过宽 */
+      max-width: 600px;
     }
 
     .entry {
@@ -88,10 +99,9 @@ export const html = `<!DOCTYPE html>
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-      user-select: none;
-      /* 上下留白完全对称 */
-      padding: 1.5rem 1.2rem;
+      padding: 1.5rem;
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
     }
 
     .entry:hover {
@@ -103,7 +113,7 @@ export const html = `<!DOCTYPE html>
       justify-content: space-between;
       align-items: center;
       font-size: 1rem;
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
     }
 
     .code-url a {
@@ -173,17 +183,40 @@ export const html = `<!DOCTYPE html>
       background-color: #e67e22;
     }
 
+    /* 响应式设计：针对小屏设备优化 */
     @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
       input[type="text"], input[type="url"] {
-        width: 200px;
+        width: 100%;
+        max-width: 100%;
       }
 
       button {
-        width: 120px;
+        width: 100%;
       }
 
       .entry {
-        padding: 1.5rem 1rem;
+        padding: 1rem;
+      }
+
+      .code-url {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .details {
+        margin-top: 1rem;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      h2 {
+        font-size: 1rem;
       }
     }
   </style>
@@ -193,11 +226,11 @@ export const html = `<!DOCTYPE html>
 
   <form id="createForm">
     <input type="text" name="code" placeholder="短码，如: abc123" required />
-    <input type="url" name="url" placeholder="目标链接，如: https://example.com " required />
+    <input type="url" name="url" placeholder="目标链接，如: https://example.com" required />
     <button type="submit">创建</button>
   </form>
 
-  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/ " target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
+  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/" target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
 
   <div id="list"></div>
 
