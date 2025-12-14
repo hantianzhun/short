@@ -5,25 +5,34 @@ export const html = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>短链管理</title>
   <style>
+    /* 关键：整页垂直居中 */
+    html, body {
+      height: 100%;
+    }
     body {
       font-family: 'Arial', sans-serif;
       background-color: #f4f7fa;
-      padding: 2rem;
       margin: 0;
       color: #333;
+
+      display: flex;              /* 开启 flex */
+      flex-direction: column;     /* 纵向排列 */
+      justify-content: center;    /* 垂直居中 */
+      align-items: center;        /* 水平也居中（可选） */
+      gap: 2rem;                  /* 代替原来的 padding-top/bottom */
     }
 
     h1 {
       text-align: center;
       color: #2c3e50;
-      margin-bottom: 1.5rem;
+      margin: 0;
       font-size: 2rem;
     }
 
     h2 {
       font-size: 1rem;
       text-align: center;
-      margin-top: 1rem;
+      margin: 0;
       color: #7f8c8d;
     }
 
@@ -31,7 +40,6 @@ export const html = `<!DOCTYPE html>
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin-bottom: 2rem;
     }
 
     input[type="text"],
@@ -66,10 +74,11 @@ export const html = `<!DOCTYPE html>
     }
 
     #list {
-      margin-top: 2rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      width: 100%;
+      max-width: 600px;   /* 限制最大宽度，避免过宽 */
     }
 
     .entry {
@@ -183,11 +192,11 @@ export const html = `<!DOCTYPE html>
 
   <form id="createForm">
     <input type="text" name="code" placeholder="短码，如: abc123" required />
-    <input type="url" name="url" placeholder="目标链接，如: https://example.com" required />
+    <input type="url" name="url" placeholder="目标链接，如: https://example.com " required />
     <button type="submit">创建</button>
   </form>
 
-  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/" target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
+  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/ " target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
 
   <div id="list"></div>
 
@@ -203,7 +212,7 @@ export const html = `<!DOCTYPE html>
         div.className = 'entry'
         div.innerHTML = \`
           <div class="code-url">
-            <span>短码：<a href="/\${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/\${code}</a></span>
+            <span>短码：<a href="/\${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/ \${code}</a></span>
             <div>
               <button class="delete-btn">删除</button>
             </div>
