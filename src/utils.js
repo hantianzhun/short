@@ -5,52 +5,47 @@ export const html = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>短链管理</title>
   <style>
-    /* 全局样式 */
+    /* 关键：整页垂直居中 */
     html, body {
       height: 100%;
-      margin: 0;
+    }
+    body {
       font-family: 'Arial', sans-serif;
       background-color: #f4f7fa;
+      margin: 0;
       color: #333;
-    }
 
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
-      padding: 1rem;
+      display: flex;              /* 开启 flex */
+      flex-direction: column;     /* 纵向排列 */
+      justify-content: center;    /* 垂直居中 */
+      align-items: center;        /* 水平也居中（可选） */
+      gap: 2rem;                  /* 代替原来的 padding-top/bottom */
     }
 
     h1 {
-      font-size: 2rem;
-      color: #2c3e50;
       text-align: center;
+      color: #2c3e50;
       margin: 0;
+      font-size: 2rem;
     }
 
     h2 {
       font-size: 1rem;
-      color: #7f8c8d;
       text-align: center;
       margin: 0;
+      color: #7f8c8d;
     }
 
-    /* 表单样式 */
     form {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       gap: 1rem;
-      align-items: center;
-      width: 100%;
-      max-width: 600px;
     }
 
-    input[type="text"], input[type="url"] {
+    input[type="text"],
+    input[type="url"] {
       padding: 0.8rem;
-      width: 100%;
-      max-width: 350px;
+      width: 250px;
       border-radius: 10px;
       border: 1px solid #ddd;
       font-size: 1rem;
@@ -58,7 +53,8 @@ export const html = `<!DOCTYPE html>
       transition: border-color 0.3s;
     }
 
-    input[type="text"]:focus, input[type="url"]:focus {
+    input[type="text"]:focus,
+    input[type="url"]:focus {
       border-color: #3498db;
     }
 
@@ -77,13 +73,12 @@ export const html = `<!DOCTYPE html>
       background-color: #2980b9;
     }
 
-    /* 列表部分 */
     #list {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       width: 100%;
-      max-width: 600px;
+      max-width: 600px;   /* 限制最大宽度，避免过宽 */
     }
 
     .entry {
@@ -93,9 +88,10 @@ export const html = `<!DOCTYPE html>
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 1.5rem;
       transition: transform 0.3s;
-      cursor: pointer;
+      user-select: none;
+      /* 上下留白完全对称 */
+      padding: 1.5rem 1.2rem;
     }
 
     .entry:hover {
@@ -106,6 +102,7 @@ export const html = `<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 1rem;
       margin-bottom: 0.8rem;
     }
 
@@ -128,17 +125,24 @@ export const html = `<!DOCTYPE html>
       background-color: #c0392b;
     }
 
-    /* 详情部分 */
     .details {
       display: none;
+      margin-top: 1rem;
       background-color: #ecf0f1;
       padding: 1rem;
       border-radius: 6px;
-      margin-top: 1rem;
     }
 
     .entry.open .details {
       display: block;
+    }
+
+    .edit-url {
+      width: 100%;
+      padding: 0.8rem;
+      margin-right: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
     }
 
     .actions {
@@ -169,27 +173,17 @@ export const html = `<!DOCTYPE html>
       background-color: #e67e22;
     }
 
-    /* 响应式设计 */
     @media (max-width: 600px) {
       input[type="text"], input[type="url"] {
-        width: 80%;
+        width: 200px;
       }
 
       button {
-        width: 60%;
+        width: 120px;
       }
 
       .entry {
-        padding: 1rem;
-      }
-
-      .code-url {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .details {
-        margin-top: 1rem;
+        padding: 1.5rem 1rem;
       }
     }
   </style>
@@ -199,11 +193,11 @@ export const html = `<!DOCTYPE html>
 
   <form id="createForm">
     <input type="text" name="code" placeholder="短码，如: abc123" required />
-    <input type="url" name="url" placeholder="目标链接，如: https://example.com" required />
+    <input type="url" name="url" placeholder="目标链接，如: https://example.com " required />
     <button type="submit">创建</button>
   </form>
 
-  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/" target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
+  <h2>需要二维码？请复制短链接地址，然后访问 <a href="https://qr.ioi.tw/zh-cn/ " target="_blank" rel="noopener noreferrer">二维码生成器</a> 粘贴生成二维码。</h2>
 
   <div id="list"></div>
 
@@ -217,23 +211,23 @@ export const html = `<!DOCTYPE html>
       items.forEach(({ code, url }) => {
         const div = document.createElement('div')
         div.className = 'entry'
-        div.innerHTML = `
+        div.innerHTML = \`
           <div class="code-url">
-            <span>短码：<a href="/${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/ ${code}</a></span>
+            <span>短码：<a href="/\${code}" target="_blank" rel="noopener noreferrer">https://qr.hanli.dpdns.org/ \${code}</a></span>
             <div>
               <button class="delete-btn">删除</button>
             </div>
           </div>
           <div class="details">
             <div>
-              当前链接：<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
+              当前链接：<a href="\${url}" target="_blank" rel="noopener noreferrer">\${url}</a>
             </div>
             <div class="actions">
-              <input type="url" placeholder="修改后的链接" class="edit-url" value="${url}" />
+              <input type="url" placeholder="修改后的链接" class="edit-url" value="\${url}" />
               <button class="update-btn">保存修改</button>
             </div>
           </div>
-        `
+        \`
 
         div.addEventListener('click', (e) => {
           if (
