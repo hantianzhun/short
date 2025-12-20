@@ -51,6 +51,19 @@
       padding: 10px 16px;
       border-radius: 8px;
       cursor: pointer;
+      margin-right: 8px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button[type="button"] {
+      background: #6b7280;
+    }
+
+    button[type="button"]:hover {
+      background: #4b5563;
     }
 
     table {
@@ -151,6 +164,11 @@
       td:last-child button {
         width: 100%;
         margin-top: 0;
+        margin-bottom: 8px;
+      }
+
+      td:last-child button:last-child {
+        margin-bottom: 0;
       }
     }
 
@@ -183,6 +201,16 @@
       </form>
     </div>
 
+    <div class="card" id="updateCard" style="display: none;">
+      <h3>更新短链</h3>
+      <form id="updateForm">
+        <input type="hidden" name="code" id="updateCode" />
+        <input name="url" id="updateUrl" placeholder="新目标 URL" required />
+        <button type="submit">更新</button>
+        <button type="button" onclick="cancelUpdate()">取消</button>
+      </form>
+    </div>
+
     <div class="card">
       <table>
         <thead>
@@ -208,26 +236,77 @@
           <td data-label="短码"><a href="/${item.code}" target="_blank">${item.code}</a></td>
           <td data-label="目标地址">${item.url}</td>
           <td data-label="操作">
+            <button onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
             <button onclick="remove('${item.code}')">删除</button>
           </td>
         </tr>
       `).join('')
     }
 
+    function update(code, url) {
+      document.getElementById('updateCode').value = code
+      document.getElementById('updateUrl').value = url
+      document.getElementById('updateCard').style.display = 'block'
+      document.getElementById('updateCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+
+    function cancelUpdate() {
+      document.getElementById('updateCard').style.display = 'none'
+      document.getElementById('updateForm').reset()
+    }
+
     async function remove(code) {
-      await fetch('/api/delete', {
-        method: 'POST',
-        body: new URLSearchParams({ code })
-      })
-      fetchList()
+      if (!confirm(`确定要删除短码 "${code}" 吗？`)) {
+        return
+      }
+      try {
+        const res = await fetch('/api/delete', {
+          method: 'POST',
+          body: new URLSearchParams({ code })
+        })
+        if (res.ok) {
+          fetchList()
+        } else {
+          const data = await res.json()
+          alert(data.error || '删除失败')
+        }
+      } catch (error) {
+        alert('删除失败: ' + error.message)
+      }
     }
 
     document.getElementById('createForm').addEventListener('submit', async e => {
       e.preventDefault()
-      const form = new FormData(e.target)
-      await fetch('/api/create', { method: 'POST', body: form })
-      e.target.reset()
-      fetchList()
+      try {
+        const form = new FormData(e.target)
+        const res = await fetch('/api/create', { method: 'POST', body: form })
+        const data = await res.json()
+        if (res.ok) {
+          e.target.reset()
+          fetchList()
+        } else {
+          alert(data.error || '创建失败')
+        }
+      } catch (error) {
+        alert('创建失败: ' + error.message)
+      }
+    })
+
+    document.getElementById('updateForm').addEventListener('submit', async e => {
+      e.preventDefault()
+      try {
+        const form = new FormData(e.target)
+        const res = await fetch('/api/update', { method: 'POST', body: form })
+        const data = await res.json()
+        if (res.ok) {
+          cancelUpdate()
+          fetchList()
+        } else {
+          alert(data.error || '更新失败')
+        }
+      } catch (error) {
+        alert('更新失败: ' + error.message)
+      }
     })
 
     fetchList()
