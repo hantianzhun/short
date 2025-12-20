@@ -82,6 +82,137 @@
       text-decoration: none;
     }
 
+    /* 自定义对话框样式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      transform: scale(0.9);
+      animation: slideUp 0.2s ease-out forwards;
+    }
+
+    @keyframes slideUp {
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .modal-message {
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .modal-btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .modal-btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .modal-btn-danger:hover {
+      background: #dc2626;
+    }
+
+    /* 提示框样式 */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--card);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 300px;
+      opacity: 0;
+      transform: translateX(400px);
+      animation: slideInRight 0.3s ease-out forwards;
+    }
+
+    @keyframes slideInRight {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast-error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .toast-success {
+      border-left: 4px solid #10b981;
+    }
+
+    .toast-icon {
+      font-size: 20px;
+    }
+
     /* 移动端适配 */
     @media (max-width: 768px) {
       .container {
@@ -195,7 +326,7 @@
 
     <div class="card">
       <form id="createForm">
-        <input name="code" placeholder="短码（如: gh）" required />
+        <input name="code" placeholder="短码" required />
         <input name="url" placeholder="目标 URL" required />
         <button type="submit">创建短链</button>
       </form>
@@ -228,6 +359,74 @@
   <script>
     const listEl = document.getElementById('list')
 
+    // 自定义确认对话框
+    function showConfirm(message, onConfirm, onCancel) {
+      const overlay = document.createElement('div')
+      overlay.className = 'modal-overlay'
+      
+      const modal = document.createElement('div')
+      modal.className = 'modal'
+      
+      const title = document.createElement('div')
+      title.className = 'modal-title'
+      title.textContent = '确认操作'
+      
+      const messageDiv = document.createElement('div')
+      messageDiv.className = 'modal-message'
+      messageDiv.innerHTML = message
+      
+      const actions = document.createElement('div')
+      actions.className = 'modal-actions'
+      
+      const cancelBtn = document.createElement('button')
+      cancelBtn.className = 'modal-btn modal-btn-secondary'
+      cancelBtn.setAttribute('data-action', 'cancel')
+      cancelBtn.textContent = '取消'
+      
+      const confirmBtn = document.createElement('button')
+      confirmBtn.className = 'modal-btn modal-btn-danger'
+      confirmBtn.setAttribute('data-action', 'confirm')
+      confirmBtn.textContent = '确认'
+      
+      actions.appendChild(cancelBtn)
+      actions.appendChild(confirmBtn)
+      modal.appendChild(title)
+      modal.appendChild(messageDiv)
+      modal.appendChild(actions)
+      overlay.appendChild(modal)
+      document.body.appendChild(overlay)
+
+      const handleClick = (e) => {
+        const action = e.target.getAttribute('data-action')
+        if (action === 'confirm') {
+          overlay.remove()
+          if (onConfirm) onConfirm()
+        } else if (action === 'cancel' || e.target === overlay) {
+          overlay.remove()
+          if (onCancel) onCancel()
+        }
+      }
+
+      overlay.addEventListener('click', handleClick)
+    }
+
+    // 自定义提示框
+    function showToast(message, type = 'error') {
+      const toast = document.createElement('div')
+      toast.className = `toast toast-${type}`
+      const icon = type === 'error' ? '❌' : '✅'
+      toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span>${message}</span>
+      `
+      document.body.appendChild(toast)
+
+      setTimeout(() => {
+        toast.style.animation = 'slideInRight 0.3s ease-out reverse'
+        setTimeout(() => toast.remove(), 300)
+      }, 3000)
+    }
+
     async function fetchList() {
       const res = await fetch('/api/list')
       const data = await res.json()
@@ -256,23 +455,23 @@
     }
 
     async function remove(code) {
-      if (!confirm(`确定要删除短码 "${code}" 吗？`)) {
-        return
-      }
-      try {
-        const res = await fetch('/api/delete', {
-          method: 'POST',
-          body: new URLSearchParams({ code })
-        })
-        if (res.ok) {
-          fetchList()
-        } else {
-          const data = await res.json()
-          alert(data.error || '删除失败')
+      showConfirm(`确定要删除短码 <strong>"${code}"</strong> 吗？此操作无法撤销。`, async () => {
+        try {
+          const res = await fetch('/api/delete', {
+            method: 'POST',
+            body: new URLSearchParams({ code })
+          })
+          if (res.ok) {
+            showToast('删除成功', 'success')
+            fetchList()
+          } else {
+            const data = await res.json()
+            showToast(data.error || '删除失败')
+          }
+        } catch (error) {
+          showToast('删除失败: ' + error.message)
         }
-      } catch (error) {
-        alert('删除失败: ' + error.message)
-      }
+      })
     }
 
     document.getElementById('createForm').addEventListener('submit', async e => {
@@ -282,13 +481,14 @@
         const res = await fetch('/api/create', { method: 'POST', body: form })
         const data = await res.json()
         if (res.ok) {
+          showToast('创建成功', 'success')
           e.target.reset()
           fetchList()
         } else {
-          alert(data.error || '创建失败')
+          showToast(data.error || '创建失败')
         }
       } catch (error) {
-        alert('创建失败: ' + error.message)
+        showToast('创建失败: ' + error.message)
       }
     })
 
@@ -299,13 +499,14 @@
         const res = await fetch('/api/update', { method: 'POST', body: form })
         const data = await res.json()
         if (res.ok) {
+          showToast('更新成功', 'success')
           cancelUpdate()
           fetchList()
         } else {
-          alert(data.error || '更新失败')
+          showToast(data.error || '更新失败')
         }
       } catch (error) {
-        alert('更新失败: ' + error.message)
+        showToast('更新失败: ' + error.message)
       }
     })
 
