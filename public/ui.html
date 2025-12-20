@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>短链管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      background: var(--bg);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.05);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🔗 短链管理</h1>
+
+    <div class="card">
+      <form id="createForm">
+        <input name="code" placeholder="短码（如: gh）" required />
+        <input name="url" placeholder="目标 URL" required />
+        <button type="submit">创建短链</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>短码</th>
+            <th>目标地址</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const listEl = document.getElementById('list')
+
+    async function fetchList() {
+      const res = await fetch('/api/list')
+      const data = await res.json()
+      listEl.innerHTML = data.map(item => `
+        <tr>
+          <td><a href="/${item.code}" target="_blank">${item.code}</a></td>
+          <td>${item.url}</td>
+          <td>
+            <button onclick="remove('${item.code}')">删除</button>
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    async function remove(code) {
+      await fetch('/api/delete', {
+        method: 'POST',
+        body: new URLSearchParams({ code })
+      })
+      fetchList()
+    }
+
+    document.getElementById('createForm').addEventListener('submit', async e => {
+      e.preventDefault()
+      const form = new FormData(e.target)
+      await fetch('/api/create', { method: 'POST', body: form })
+      e.target.reset()
+      fetchList()
+    })
+
+    fetchList()
+  </script>
+</body>
+</html>
