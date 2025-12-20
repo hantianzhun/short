@@ -198,21 +198,20 @@ export default {
 
       // 首页：重定向到 ui.html
       if (pathname === '/' || pathname === '') {
-        return Response.redirect('/ui.html', 302)
+        return Response.redirect(new URL('/ui.html', request.url).toString(), 302)
       }
 
-      // 静态文件路径，让 Cloudflare assets 自动处理
-      // 如果路径包含文件扩展名（如 .html, .css, .js），不当作短码处理
-      if (pathname.includes('.') && !pathname.startsWith('/api/')) {
-        // 让 Cloudflare 的 assets 配置处理，如果文件不存在会继续执行到这里
-        // 这里返回 404，让 assets 处理失败时能明确提示
-        return new Response('静态文件未找到', {
+      // 静态文件路径（包含扩展名的路径）
+      // 如果静态文件存在，Cloudflare assets 会自动处理，Worker 不会执行到这里
+      // 如果静态文件不存在，请求会传递到 Worker，这里返回 404
+      if (pathname.includes('.')) {
+        return new Response('文件不存在', {
           status: 404,
           headers: { 'Content-Type': 'text/plain; charset=utf-8' },
         })
       }
 
-      // 短码跳转处理
+      // 短码跳转处理（只有不匹配 API 和静态文件的路径才会到这里）
       return await handleRedirect(request, env)
     } catch (error) {
       console.error('Main Error:', error)
