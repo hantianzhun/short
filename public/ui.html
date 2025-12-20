@@ -69,6 +69,7 @@
       margin-bottom: 24px;
       box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
       transition: box-shadow 0.3s ease;
+      position: relative;
     }
 
     .card:hover {
@@ -492,6 +493,31 @@
         margin-bottom: 0;
       }
     }
+
+    /* Desktop specific styles for action buttons */
+    @media (min-width: 769px) {
+      .action-buttons {
+        justify-content: flex-end;
+      }
+      
+      td:last-child {
+        text-align: right;
+      }
+    }
+
+    /* Mobile goto button positioning */
+    .mobile-goto-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-goto-btn {
+        display: block;
+      }
+    }
   </style>
 </head>
 
@@ -633,14 +659,20 @@
             <td data-label="短码"><a href="/${item.code}" target="_blank">${item.code}</a></td>
             <td data-label="目标地址">${item.url}</td>
             <td data-label="操作">
+              ${!isMobile ? `<button class="btn-action" onclick="gotoShortLink('${item.code}')">转到</button>` : ''}
               <div class="action-buttons">
                 <button class="btn-action" onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
                 <button class="btn-action btn-action-danger" onclick="remove('${item.code}')">删除</button>
               </div>
+              ${isMobile ? `<button class="btn-action mobile-goto-btn" onclick="gotoShortLink('${item.code}')">转到</button>` : ''}
             </td>
           </tr>
         `).join('')
       }
+    }
+
+    function gotoShortLink(code) {
+      window.open(`/${code}`, '_blank')
     }
 
     // 窗口大小改变时重新检查
