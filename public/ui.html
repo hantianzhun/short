@@ -231,6 +231,40 @@
       background: rgba(103, 80, 164, 0.08);
     }
 
+    /* Action buttons with outline */
+    .btn-action {
+      background: transparent;
+      color: var(--md-sys-color-primary);
+      border: 1px solid var(--md-sys-color-outline);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: none;
+      margin-right: 8px;
+      min-height: 40px;
+    }
+
+    .btn-action:hover {
+      background: rgba(103, 80, 164, 0.08);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .btn-action-danger {
+      color: var(--md-sys-color-error);
+      border-color: var(--md-sys-color-error);
+    }
+
+    .btn-action-danger:hover {
+      background: rgba(186, 26, 26, 0.08);
+      border-color: var(--md-sys-color-error);
+    }
+
     /* Table */
     table {
       width: 100%;
@@ -376,7 +410,11 @@
       }
 
       thead {
-        display: none;
+        display: none !important;
+      }
+
+      #tableHead {
+        display: none !important;
       }
 
       tbody {
@@ -556,26 +594,37 @@
       const data = await res.json()
       const tableHead = document.getElementById('tableHead')
       const emptyState = document.getElementById('emptyState')
+      const isMobile = window.innerWidth <= 768
       
       if (data.length === 0) {
         tableHead.style.display = 'none'
         emptyState.style.display = 'block'
         listEl.innerHTML = ''
       } else {
-        tableHead.style.display = 'table-header-group'
+        // 移动端始终隐藏表头
+        tableHead.style.display = isMobile ? 'none' : 'table-header-group'
         emptyState.style.display = 'none'
         listEl.innerHTML = data.map(item => `
           <tr>
             <td data-label="短码"><a href="/${item.code}" target="_blank">${item.code}</a></td>
             <td data-label="目标地址">${item.url}</td>
             <td data-label="操作">
-              <button class="btn-text" onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
-              <button class="btn-text" onclick="remove('${item.code}')" style="color: var(--md-sys-color-error);">删除</button>
+              <button class="btn-action" onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
+              <button class="btn-action btn-action-danger" onclick="remove('${item.code}')">删除</button>
             </td>
           </tr>
         `).join('')
       }
     }
+
+    // 窗口大小改变时重新检查
+    window.addEventListener('resize', () => {
+      const tableHead = document.getElementById('tableHead')
+      const isMobile = window.innerWidth <= 768
+      if (tableHead && document.getElementById('list').innerHTML) {
+        tableHead.style.display = isMobile ? 'none' : 'table-header-group'
+      }
+    })
 
     function update(code, url) {
       document.getElementById('updateCode').value = code
