@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
   <meta charset="UTF-8" />
   <title>短链管理</title>
@@ -15,19 +14,19 @@
       --md-sys-color-on-primary: #FFFFFF;
       --md-sys-color-primary-container: #EADDFF;
       --md-sys-color-on-primary-container: #21005D;
-
+      
       --md-sys-color-surface: #FFFBFE;
       --md-sys-color-on-surface: #1C1B1F;
       --md-sys-color-surface-container: #F7F2FA;
       --md-sys-color-surface-container-high: #F0EAFA;
-
+      
       --md-sys-color-outline: #79747E;
       --md-sys-color-outline-variant: #CAC4D0;
-
+      
       --md-sys-color-error: #BA1A1A;
       --md-sys-color-on-error: #FFFFFF;
       --md-sys-color-error-container: #FFDAD6;
-
+      
       --md-sys-color-shadow: rgba(0, 0, 0, 0.15);
     }
 
@@ -96,7 +95,6 @@
         opacity: 0;
         transform: translateY(20px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -328,9 +326,7 @@
     }
 
     @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
+      to { opacity: 1; }
     }
 
     .modal {
@@ -345,9 +341,7 @@
     }
 
     @keyframes scaleIn {
-      to {
-        transform: scale(1);
-      }
+      to { transform: scale(1); }
     }
 
     .modal-title {
@@ -498,47 +492,6 @@
         margin-bottom: 0;
       }
     }
-
-    /* PC：操作列靠右 */
-    @media (min-width: 769px) {
-
-      th:last-child {
-        display: none;
-      }
-
-      .action-buttons {
-        justify-content: flex-end;
-      }
-    }
-
-    /* Mobile：转到按钮右上角 */
-    @media (max-width: 768px) {
-      tr {
-        position: relative;
-        /* 仅增加，不破坏结构 */
-      }
-
-      .btn-go {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 2;
-        padding: 6px 14px;
-        min-height: auto;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .action-buttons {
-        padding-top: 32px;
-        /* 给右上角按钮让位 */
-      }
-
-      .btn-go {
-        z-index: 1;
-        /* 不压住下面按钮 */
-      }
-    }
   </style>
 </head>
 
@@ -594,32 +547,32 @@
     function showConfirm(message, onConfirm, onCancel) {
       const overlay = document.createElement('div')
       overlay.className = 'modal-overlay'
-
+      
       const modal = document.createElement('div')
       modal.className = 'modal'
-
+      
       const title = document.createElement('div')
       title.className = 'modal-title'
       title.textContent = '确认操作'
-
+      
       const messageDiv = document.createElement('div')
       messageDiv.className = 'modal-message'
       messageDiv.innerHTML = message
-
+      
       const actions = document.createElement('div')
       actions.className = 'modal-actions'
-
+      
       const cancelBtn = document.createElement('button')
       cancelBtn.className = 'btn-text'
       cancelBtn.setAttribute('data-action', 'cancel')
       cancelBtn.textContent = '取消'
-
+      
       const confirmBtn = document.createElement('button')
       confirmBtn.className = 'btn-filled'
       confirmBtn.style.background = 'var(--md-sys-color-error)'
       confirmBtn.setAttribute('data-action', 'confirm')
       confirmBtn.textContent = '确认'
-
+      
       actions.appendChild(cancelBtn)
       actions.appendChild(confirmBtn)
       modal.appendChild(title)
@@ -666,7 +619,7 @@
       const tableHead = document.getElementById('tableHead')
       const emptyState = document.getElementById('emptyState')
       const isMobile = window.innerWidth <= 768
-
+      
       if (data.length === 0) {
         tableHead.style.display = 'none'
         emptyState.style.display = 'block'
@@ -681,11 +634,9 @@
             <td data-label="目标地址">${item.url}</td>
             <td data-label="操作">
               <div class="action-buttons">
-                <a class="btn-action btn-go" href="/${item.code}" target="_blank">转到</a>
-                <button class="btn-action" onclick="update(...)">更新</button>
-                <button class="btn-action btn-action-danger" onclick="remove(...)">删除</button>
+                <button class="btn-action" onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
+                <button class="btn-action btn-action-danger" onclick="remove('${item.code}')">删除</button>
               </div>
-
             </td>
           </tr>
         `).join('')
@@ -772,5 +723,4 @@
     fetchList()
   </script>
 </body>
-
 </html>
