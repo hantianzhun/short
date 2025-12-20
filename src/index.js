@@ -20,6 +20,29 @@ async function handleApi(request, env) {
         })
       }
 
+      // 检查是否为保留路径（与静态文件或 API 路径冲突）
+      const reservedPaths = ['ui', 'api', 'ui.html', 'error', 'error.html']
+      if (reservedPaths.includes(code.toLowerCase())) {
+        return new Response(JSON.stringify({ error: `短码 "${code}" 为保留路径，无法使用。请使用其他短码。` }), {
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json; charset=utf-8',
+            'Access-Control-Allow-Origin': '*',
+          },
+        })
+      }
+
+      // 检查是否包含特殊字符或扩展名（可能与静态文件冲突）
+      if (code.includes('.') || code.includes('/') || code.includes('\\')) {
+        return new Response(JSON.stringify({ error: '短码不能包含 . / \\ 等特殊字符' }), {
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json; charset=utf-8',
+            'Access-Control-Allow-Origin': '*',
+          },
+        })
+      }
+
       // 检查是否存在
       const result = await env.DB.prepare('SELECT * FROM links WHERE code = ?')
         .bind(code)
@@ -162,10 +185,10 @@ async function handleRedirect(request, env) {
     if (result.results && result.results.length > 0) {
       return Response.redirect(result.results[0].url, 302)
     } else {
-      return new Response('短码不存在', { 
-        status: 404,
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-      })
+      // 重定向到错误页面，传递短码参数
+      const errorUrl = new URL('/error.html', request.url)
+      errorUrl.searchParams.set('code', code)
+      return Response.redirect(errorUrl.toString(), 302)
     }
   } catch (error) {
     console.error('Redirect Error:', error)
