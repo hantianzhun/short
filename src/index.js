@@ -95,7 +95,7 @@ export default {
 
     // 访问首页 → 返回 ui.html
     if (url.pathname === '/') {
-      return env.ASSETS.fetch(new Request(url.origin + '/ui.html'))
+      return Response.redirect('/ui.html', 302)
     }
 
     // ========== 跳转短码 ==========
@@ -115,3 +115,4 @@ export default {
     return new Response('Bad Request', { status: 400 })
   },
 }
+
