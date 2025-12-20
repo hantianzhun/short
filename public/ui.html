@@ -395,6 +395,17 @@
       font-size: 20px;
     }
 
+    /* Button visibility control */
+    .desktop-goto-btn {
+      display: inline-block;
+    }
+    .mobile-goto-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: none;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .container {
@@ -437,6 +448,7 @@
         padding: 16px;
         box-shadow: none;
         border: 1px solid var(--md-sys-color-outline-variant);
+        position: relative; /* Essential for mobile button positioning */
       }
 
       td {
@@ -492,6 +504,14 @@
       .btn-text:last-child {
         margin-bottom: 0;
       }
+
+      /* Toggle button visibility for mobile */
+      .desktop-goto-btn {
+        display: none;
+      }
+      .mobile-goto-btn {
+        display: block;
+      }
     }
 
     /* Desktop specific styles for action buttons */
@@ -502,20 +522,6 @@
       
       td:last-child {
         text-align: right;
-      }
-    }
-
-    /* Mobile goto button positioning */
-    .mobile-goto-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .mobile-goto-btn {
-        display: block;
       }
     }
   </style>
@@ -659,12 +665,12 @@
             <td data-label="短码"><a href="/${item.code}" target="_blank">${item.code}</a></td>
             <td data-label="目标地址">${item.url}</td>
             <td data-label="操作">
-              ${!isMobile ? `<button class="btn-action" onclick="gotoShortLink('${item.code}')">转到</button>` : ''}
+              <button class="btn-action mobile-goto-btn" onclick="gotoShortLink('${item.code}')">转到</button>
               <div class="action-buttons">
+                <button class="btn-action desktop-goto-btn" onclick="gotoShortLink('${item.code}')">转到</button>
                 <button class="btn-action" onclick="update('${item.code}', '${item.url.replace(/'/g, "\\'")}')">更新</button>
                 <button class="btn-action btn-action-danger" onclick="remove('${item.code}')">删除</button>
               </div>
-              ${isMobile ? `<button class="btn-action mobile-goto-btn" onclick="gotoShortLink('${item.code}')">转到</button>` : ''}
             </td>
           </tr>
         `).join('')
