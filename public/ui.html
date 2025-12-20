@@ -285,10 +285,6 @@
       color: var(--md-sys-color-on-surface);
     }
 
-    th:last-child {
-      text-align: right;
-    }
-
     td {
       padding: 16px;
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
@@ -296,14 +292,10 @@
       line-height: 20px;
     }
 
-    td:last-child {
-      text-align: right;
-    }
-
     .action-buttons {
-      display: inline-flex;
+      display: flex;
       gap: 8px;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
     }
 
@@ -442,7 +434,8 @@
         background: var(--md-sys-color-surface);
         border-radius: 12px;
         padding: 16px;
-        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+        box-shadow: none;
+        border: 1px solid var(--md-sys-color-outline-variant);
       }
 
       td {
