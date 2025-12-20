@@ -527,6 +527,18 @@
         min-height: auto;
       }
     }
+
+    @media (max-width: 768px) {
+      .action-buttons {
+        padding-top: 32px;
+        /* 给右上角按钮让位 */
+      }
+
+      .btn-go {
+        z-index: 1;
+        /* 不压住下面按钮 */
+      }
+    }
   </style>
 </head>
 
