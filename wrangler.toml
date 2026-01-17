@@ -5,8 +5,10 @@ workers_dev = true
 
 [assets]
 directory = "./public"
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "short"
+
 database_id = "205c5d3d-653f-46ff-89d0-14435f523b5e"
