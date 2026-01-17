@@ -221,8 +221,10 @@ export default {
 
       // 首页：重定向到 ui.html
       if (pathname === '/' || pathname === '') {
-        return Response.redirect(new URL('/ui.html', request.url).toString(), 302)
-      }
+      return env.ASSETS.fetch(
+        new Request(new URL('/ui.html', request.url))
+      )
+    }
 
       // 静态文件路径（包含扩展名的路径）
       // 如果静态文件存在，Cloudflare assets 会自动处理，Worker 不会执行到这里
@@ -245,3 +247,4 @@ export default {
     }
   },
 }
+
